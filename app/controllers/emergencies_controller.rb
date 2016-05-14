@@ -64,6 +64,7 @@ class EmergenciesController < ApplicationController
   end
 
   private
+
   def set_emergency
     @emergency = Emergency.find_by(code: params[:code])
   end

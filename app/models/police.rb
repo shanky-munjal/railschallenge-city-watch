@@ -7,7 +7,7 @@ class Police < Responder
     on_duty.less_than_or_equal_severity(severity).order_by_capacity_desc.each do |police_responder|
       if severity > 0
         selected_responder.push(police_responder)
-        severity = severity - police_responder.capacity
+        severity -= police_responder.capacity
       else
         break
       end

@@ -9,7 +9,7 @@ class Fire < Responder
 
       if severity > 0
         selected_responder.push(fire_responder)
-        severity = severity - fire_responder.capacity
+        severity -= fire_responder.capacity
       else
         break
       end

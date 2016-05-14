@@ -7,7 +7,7 @@ class Medical < Responder
     on_duty.less_than_or_equal_severity(severity).order_by_capacity_desc.each do |medical_responder|
       if severity > 0
         selected_responder.push(medical_responder)
-        severity = severity - medical_responder.capacity
+        severity -= medical_responder.capacity
       else
         break
       end

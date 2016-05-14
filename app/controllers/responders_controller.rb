@@ -74,9 +74,10 @@ class RespondersController < ApplicationController
   end
 
   private
-    def set_responder
-      @responder = Responder.find_by(name: params[:name])
-    end
+
+  def set_responder
+    @responder = Responder.find_by(name: params[:name])
+  end
 
   def responder_params
     begin
