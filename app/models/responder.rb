@@ -1,13 +1,14 @@
 class Responder < ActiveRecord::Base
-  scope :on_duty, -> {where(on_duty: true)}
-  scope :order_by_capacity_desc, -> {order("capacity DESC")}
-  scope :order_by_capacity_asc, -> {order("capacity asc")}
-  scope :less_than_or_equal_severity, -> (severity) {where("capacity <= ?", severity)}
-  scope :greater_than_severity, -> (severity) {where("capacity > ?", severity)}
+  scope :on_duty, -> { where(on_duty: true) }
+  scope :order_by_capacity_desc, -> { order('capacity DESC') }
+  scope :order_by_capacity_asc, -> { order('capacity asc') }
+  scope :less_than_or_equal_severity, -> (severity) { where("capacity <= ?", severity) }
+  scope :greater_than_severity, -> (severity) { where("capacity > ?", severity) }
 
   validates :type, :name, :capacity, presence: true
-  validates_inclusion_of :capacity, :in => 1..5, :message => "is not included in the list"
-  validates :name, uniqueness: { :message => "has already been taken"}
+  validates_inclusion_of :capacity, :in => 1..5, :message => 'is not included in the list'
+  # validates :capacity, inclusion: { in: [1,2,3,4,5]}, :message => "is not included in the list"
+  validates :name, uniqueness: { :message => 'has already been taken'}
 
   def as_json options={}
     {
@@ -20,7 +21,7 @@ class Responder < ActiveRecord::Base
   end
 
   def self.dispatch_responder(responders, emergency_code)
-    responders.each do |responder| 
+    responders.each do |responder|
       responder.dispatch = true
       responder.emergency_code = emergency_code
       responder.save
