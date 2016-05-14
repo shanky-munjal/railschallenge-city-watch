@@ -16,5 +16,13 @@ class Emergency < ActiveRecord::Base
 		self.medical_severity.is_a? Numeric
 	end
 
+	def find_responder
+		responders = []
+		responders.push(Fire.find_for_dispatch(self.fire_severity))
+		responders.push(Police.find_for_dispatch(self.police_severity))
+		responders.push(Medical.find_for_dispatch(self.medical_severity))
+		responders
+	end
+
 
 end

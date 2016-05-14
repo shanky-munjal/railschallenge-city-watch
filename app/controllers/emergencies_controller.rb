@@ -6,7 +6,8 @@ class EmergenciesController < ApplicationController
 
 		respond_to do |format|
 			if @emergency.save
-				format.json { render json: {emergency: @emergency} , status: :created }
+				responders = @emergency.find_responder
+				format.json { render json: {emergency: {code: @emergency.code, fire_severity: @emergency.fire_severity, police_severity: @police_severity, medical_severity: @medical_severity, responders: responders}} , status: :created }
 			else
 				format.json { render json: {message: @emergency.errors.messages}, status: :unprocessable_entity }
 			end
