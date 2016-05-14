@@ -3,6 +3,7 @@ class CreateResponders < ActiveRecord::Migration
     create_table :responders do |t|
       t.string :type
       t.string :name
+      t.boolean :dispatch, default: false
       t.integer :capacity
 
       t.timestamps null: false

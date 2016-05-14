@@ -16,12 +16,13 @@ class Emergency < ActiveRecord::Base
 		self.medical_severity.is_a? Numeric
 	end
 
-	def find_responder
-		responders = []
-		responders.push(Fire.find_for_dispatch(self.fire_severity))
-		responders.push(Police.find_for_dispatch(self.police_severity))
-		responders.push(Medical.find_for_dispatch(self.medical_severity))
-		responders
+	def dispatch_responder
+		fire_responders, is_fire_done = Fire.dispatch_for_emergency(self.fire_severity, self.code)
+		police_responders, is_police_done = Police.dispatch_for_emergency(self.police_severity, self.code)
+		medical_responders, is_medical_done = Medical.dispatch_for_emergency(self.medical_severity, self.code)
+		responders = fire_responders + police_responders + medical_responders
+		responder_done = is_fire_done & is_police_done & is_medical_done
+		return responders, responder_done
 	end
 
 

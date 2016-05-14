@@ -1,7 +1,7 @@
 class RespondersController < ApplicationController
 	before_action :set_responder, only: [:show, :update]
+	before_action :render_404, only: [:new, :edit, :destroy]
 	def create
-		# debugger
 		@responder = Responder.new(responder_params)
 
 		respond_to do |format|
@@ -14,9 +14,22 @@ class RespondersController < ApplicationController
 	end
 
 	def index
-		@responders = Responder.all
-		respond_to do |format|
-			format.json { render json: {responders: @responders}, status: :ok}
+		if params[:show].try('downcase') == "capacity"
+			fire_responder = Fire.all
+			total_fire_capacity, total_fire_available, total_fire_on_duty, total_fire_available_and_on_duty = Fire.calculate_capacity
+			total_police_capacity, total_police_available, total_police_on_duty, total_police_available_and_on_duty = Police.calculate_capacity
+			total_medical_capacity, total_medical_available, total_medical_on_duty, total_medical_available_and_on_duty = Medical.calculate_capacity
+			respond_to do |format|
+				format.json { render json: {capacity: 
+					{"Fire" => [total_fire_capacity, total_fire_available, total_fire_on_duty, total_fire_available_and_on_duty],
+					 "Police" => [total_police_capacity, total_police_available, total_police_on_duty, total_police_available_and_on_duty],
+					 "Medical" => [total_medical_capacity, total_medical_available, total_medical_on_duty, total_medical_available_and_on_duty]}}, status: :ok}
+			end
+		else
+			@responders = Responder.all
+			respond_to do |format|
+				format.json { render json: {responders: @responders}, status: :ok}
+			end
 		end
 	end
 
@@ -40,13 +53,21 @@ class RespondersController < ApplicationController
 	    end		
 	end
 
+	def new
+	end
+
+	def destroy
+	end
+	def edit
+	end
+
 	private
     def set_responder
       @responder = Responder.find_by(name: params[:name])
     end
 
 	def responder_params
-		params.require(:responder).permit(:type, :name, :capacity)
+		params.require(:responder).permit(:type, :name, :capacity, :on_duty)
 	end	
 
 end

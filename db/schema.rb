@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20160514105039) do
   create_table "responders", force: :cascade do |t|
     t.string   "type"
     t.string   "name"
+    t.boolean  "dispatch",       default: false
     t.integer  "capacity"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
