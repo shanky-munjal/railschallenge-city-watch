@@ -1,4 +1,5 @@
 class RespondersController < ApplicationController
+	before_action :set_responder, only: [:show, :update]
 	def create
 		# debugger
 		@responder = Responder.new(responder_params)
@@ -20,7 +21,6 @@ class RespondersController < ApplicationController
 	end
 
 	def show
-		@responder = Responder.find_by(name: params[:name])
 		respond_to do |format|
 			if @responder
 				format.json { render json: {responder: @responder}, status: :ok}
@@ -30,7 +30,21 @@ class RespondersController < ApplicationController
 		end		
 	end
 
+	def update
+	    respond_to do |format|
+	      if @responder.update(responder_params)
+	        format.json { render json: {responder: @responder}, status: :ok }
+	      else
+	        format.json { render json: @responder.errors, status: :unprocessable_entity }
+	      end
+	    end		
+	end
+
 	private
+    def set_responder
+      @responder = Responder.find_by(name: params[:name])
+    end
+
 	def responder_params
 		params.require(:responder).permit(:type, :name, :capacity)
 	end	
