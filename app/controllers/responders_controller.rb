@@ -2,13 +2,19 @@ class RespondersController < ApplicationController
 	before_action :set_responder, only: [:show, :update]
 	before_action :render_404, only: [:new, :edit, :destroy]
 	def create
-		@responder = Responder.new(responder_params)
+		if responder_params.is_a? Hash
+			@responder = Responder.new(responder_params)
 
-		respond_to do |format|
-			if @responder.save
-				format.json { render json: {responder: @responder} , status: :created }
-			else
-				format.json { render json: {message: @responder.errors.messages}, status: :unprocessable_entity }
+			respond_to do |format|
+				if @responder.save
+					format.json { render json: {responder: @responder} , status: :created }
+				else
+					format.json { render json: {message: @responder.errors.messages}, status: :unprocessable_entity }
+				end
+			end
+		else
+			respond_to do |format|
+				format.json { render json: {message: responder_params.message} , status: :unprocessable_entity }
 			end
 		end
 	end
@@ -44,13 +50,19 @@ class RespondersController < ApplicationController
 	end
 
 	def update
-	    respond_to do |format|
-	      if @responder.update(responder_params)
-	        format.json { render json: {responder: @responder}, status: :ok }
-	      else
-	        format.json { render json: @responder.errors, status: :unprocessable_entity }
-	      end
-	    end		
+		if responder_params_for_update.is_a? Hash
+		    respond_to do |format|
+		      if @responder.update(responder_params_for_update)
+		        format.json { render json: {responder: @responder}, status: :ok }
+		      else
+		        format.json { render json: @responder.errors, status: :unprocessable_entity }
+		      end
+		    end
+		else
+			respond_to do |format|
+				format.json { render json: {message: responder_params_for_update.message} , status: :unprocessable_entity }
+			end			
+		end
 	end
 
 	def new
@@ -67,7 +79,19 @@ class RespondersController < ApplicationController
     end
 
 	def responder_params
-		params.require(:responder).permit(:type, :name, :capacity, :on_duty)
+		begin
+			params.require(:responder).permit(:type, :name, :capacity)
+		rescue => ex
+			ex
+		end
+	end	
+
+	def responder_params_for_update
+		begin
+			params.require(:responder).permit(:on_duty)
+		rescue => ex
+			ex
+		end
 	end	
 
 end
