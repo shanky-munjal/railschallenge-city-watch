@@ -17,10 +17,10 @@ ActiveRecord::Schema.define(version: 20160514091557) do
     t.string   "type"
     t.string   "name"
     t.integer  "capacity"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
     t.string   "emergency_code"
-    t.boolean  "on_duty"
+    t.boolean  "on_duty",        default: false
   end
 
 end
