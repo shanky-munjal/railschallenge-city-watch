@@ -46,7 +46,7 @@ class EmergenciesController < ApplicationController
     end
 
 	def emergency_params
-		params.require(:emergency).permit(:code, :fire_severity, :police_severity, :medical_severity)
+		params.require(:emergency).permit(:code, :fire_severity, :police_severity, :medical_severity, :resolved_at)
 	end	
 
 end
