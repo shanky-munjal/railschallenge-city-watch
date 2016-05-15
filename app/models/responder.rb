@@ -10,12 +10,12 @@ class Responder < ActiveRecord::Base
   # validates :capacity, inclusion: { in: [1,2,3,4,5]}, :message => "is not included in the list"
   validates :name, uniqueness: { message: 'has already been taken' }
 
-  def as_json options={}
+  def as_json(*)
     {
       emergency_code: emergency_code,
-      type: type, 
-      name: name, 
-      capacity: capacity, 
+      type: type,
+      name: name,
+      capacity: capacity,
       on_duty: on_duty
     }
   end

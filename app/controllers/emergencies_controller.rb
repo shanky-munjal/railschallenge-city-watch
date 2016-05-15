@@ -7,51 +7,49 @@ class EmergenciesController < ApplicationController
       respond_to do |format|
         if @emergency.save
           responders, full_response = @emergency.dispatch_responder
-          format.json { render json: {emergency: {code: @emergency.code, fire_severity: @emergency.fire_severity, police_severity: @emergency.police_severity, medical_severity: @emergency.medical_severity, responders: responders, full_response: full_response}} , status: :created }
+          format.json { render json: { emergency: { code: @emergency.code, fire_severity: @emergency.fire_severity, police_severity: @emergency.police_severity, medical_severity: @emergency.medical_severity, responders: responders, full_response: full_response } }, status: :created }
         else
-          format.json { render json: {message: @emergency.errors.messages}, status: :unprocessable_entity }
+          format.json { render json: { message: @emergency.errors.messages }, status: :unprocessable_entity }
         end
       end
     else
       respond_to do |format|
-        format.json { render json: {message: emergency_params.message} , status: :unprocessable_entity }
-      end     
+        format.json { render json: { message: emergency_params.message }, status: :unprocessable_entity }
+      end
     end
   end
 
   def index
     @emergencies = Emergency.all
     respond_to do |format|
-      format.json { render json: {emergencies: @emergencies, full_responses: [1, @emergencies.count]}, status: :ok}
+      format.json { render json: { emergencies: @emergencies, full_responses: [1, @emergencies.count] }, status: :ok }
     end
   end
 
   def show
     respond_to do |format|
       if @emergency
-        format.json { render json: {emergency: @emergency}, status: :ok}
+        format.json { render json: { emergency: @emergency }, status: :ok }
       else
-        format.json { render json: {}, status: :not_found}
+        format.json { render json: {}, status: :not_found }
       end
-    end   
+    end
   end
 
   def update
     if emergency_params_for_update.is_a? Hash
       respond_to do |format|
-        if @emergency.update(emergency_params_for_update)
-          if @emergency.resolved_at
-            Responder.make_available(@emergency.code)
-          end
-          format.json { render json: {emergency: @emergency}, status: :ok }
+        if @emergency.update(emergency_params_for_update)          
+          Responder.make_available(@emergency.code) if @emergency.resolved_at
+          format.json { render json: { emergency: @emergency }, status: :ok }
         else
           format.json { render json: @emergency.errors, status: :unprocessable_entity }
         end
       end
     else
       respond_to do |format|
-        format.json { render json: {message: emergency_params_for_update.message} , status: :unprocessable_entity }
-      end     
+        format.json { render json: { message: emergency_params_for_update.message }, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -60,6 +58,7 @@ class EmergenciesController < ApplicationController
 
   def destroy
   end
+
   def edit
   end
 
@@ -70,15 +69,14 @@ class EmergenciesController < ApplicationController
   end
 
   def emergency_params
-    begin
-      params.require(:emergency).permit(:code, :fire_severity, :police_severity, :medical_severity)
-    rescue => ex
-      ex
-    end
-  end 
+    params.require(:emergency).permit(:code, :fire_severity, :police_severity, :medical_severity)
+  rescue => ex
+    ex
+  end
+
   def emergency_params_for_update
     params.require(:emergency).permit(:fire_severity, :police_severity, :medical_severity, :resolved_at)
   rescue => ex
     ex
-  end 
+  end
 end
