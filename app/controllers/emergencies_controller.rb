@@ -4,18 +4,15 @@ class EmergenciesController < ApplicationController
   def create
     if emergency_params.is_a? Hash
       @emergency = Emergency.new(emergency_params)
-      respond_to do |format|
-        if @emergency.save
-          responders, full_response = @emergency.dispatch_responder
-          format.json { render json: { emergency: { code: @emergency.code, fire_severity: @emergency.fire_severity, police_severity: @emergency.police_severity, medical_severity: @emergency.medical_severity, responders: responders, full_response: full_response } }, status: :created }
-        else
-          format.json { render json: { message: @emergency.errors.messages }, status: :unprocessable_entity }
-        end
+      if @emergency.save
+        responders, full_response = @emergency.dispatch_responder
+        json_message = { emergency: { code: @emergency.code, fire_severity: @emergency.fire_severity, police_severity: @emergency.police_severity, medical_severity: @emergency.medical_severity, responders: responders, full_response: full_response } }
+        respond_in_json(json_message, :created)
+      else
+        respond_in_json({ message: @emergency.errors.messages }, :unprocessable_entity)
       end
     else
-      respond_to do |format|
-        format.json { render json: { message: emergency_params.message }, status: :unprocessable_entity }
-      end
+      respond_in_json({ message: emergency_params.message }, :unprocessable_entity)
     end
   end
 
@@ -27,29 +24,23 @@ class EmergenciesController < ApplicationController
   end
 
   def show
-    respond_to do |format|
-      if @emergency
-        format.json { render json: { emergency: @emergency }, status: :ok }
-      else
-        format.json { render json: {}, status: :not_found }
-      end
+    if @emergency
+      respond_in_json({ emergency: @emergency }, :ok)
+    else
+      respond_in_json({}, :not_found)
     end
   end
 
   def update
     if emergency_params_for_update.is_a? Hash
-      respond_to do |format|
-        if @emergency.update(emergency_params_for_update)          
-          Responder.make_available(@emergency.code) if @emergency.resolved_at
-          format.json { render json: { emergency: @emergency }, status: :ok }
-        else
-          format.json { render json: @emergency.errors, status: :unprocessable_entity }
-        end
+      if @emergency.update(emergency_params_for_update)          
+        Responder.make_available(@emergency.code) if @emergency.resolved_at
+        respond_in_json({ emergency: @emergency }, :ok)
+      else
+        respond_in_json(@emergency.errors, :unprocessable_entity)
       end
     else
-      respond_to do |format|
-        format.json { render json: { message: emergency_params_for_update.message }, status: :unprocessable_entity }
-      end
+      respond_in_json({ message: emergency_params_for_update.message }, :unprocessable_entity)
     end
   end
 

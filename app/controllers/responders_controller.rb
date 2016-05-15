@@ -5,17 +5,13 @@ class RespondersController < ApplicationController
     if responder_params.is_a? Hash
       @responder = Responder.new(responder_params)
 
-      respond_to do |format|
-        if @responder.save
-          format.json { render json: { responder: @responder }, status: :created }
-        else
-          format.json { render json: { message: @responder.errors.messages }, status: :unprocessable_entity }
-        end
+      if @responder.save
+        respond_in_json({ responder: @responder }, :created)
+      else
+        respond_in_json({ message: @responder.errors.messages }, :unprocessable_entity)
       end
     else
-      respond_to do |format|
-        format.json { render json: { message: responder_params.message }, status: :unprocessable_entity }
-      end
+      respond_in_json({ message: responder_params.message }, :unprocessable_entity)
     end
   end
 
@@ -39,28 +35,22 @@ class RespondersController < ApplicationController
   end
 
   def show
-    respond_to do |format|
-      if @responder
-        format.json { render json: { responder: @responder }, status: :ok }
-      else
-        format.json { render json: {}, status: :not_found }
-      end
+    if @responder
+      respond_in_json({ responder: @responder }, :ok)
+    else
+      respond_in_json({}, :not_found)
     end
   end
 
   def update
     if responder_params_for_update.is_a? Hash
-      respond_to do |format|
-        if @responder.update(responder_params_for_update)
-          format.json { render json: { responder: @responder }, status: :ok }
-        else
-          format.json { render json: @responder.errors, status: :unprocessable_entity }
-        end
+      if @responder.update(responder_params_for_update)
+        respond_in_json({ responder: @responder }, :ok)
+      else
+        respond_in_json(@responder.errors, :unprocessable_entity)
       end
     else
-      respond_to do |format|
-        format.json { render json: { message: responder_params_for_update.message}, status: :unprocessable_entity }
-      end
+      respond_in_json({ message: responder_params_for_update.message }, :unprocessable_entity)
     end
   end
 

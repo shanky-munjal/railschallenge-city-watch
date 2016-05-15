@@ -37,7 +37,7 @@ class Responder < ActiveRecord::Base
       end
     end
     dispatch_responder(selected_responder, emergency_code)
-    return selected_responder.collect(&:name), severity <= 0
+    [selected_responder.collect(&:name), severity <= 0]
   end
 
   def self.dispatch_responder(responders, emergency_code)
@@ -46,7 +46,6 @@ class Responder < ActiveRecord::Base
       responder.emergency_code = emergency_code
       responder.save
     end
-    
   end
 
   def self.make_available(emergency_code)

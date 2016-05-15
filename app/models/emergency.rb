@@ -24,7 +24,7 @@ class Emergency < ActiveRecord::Base
     medical_responders, is_medical_done = Medical.dispatch_for_emergency(medical_severity, code)
     responders = fire_responders + police_responders + medical_responders
     responder_done = is_fire_done & is_police_done & is_medical_done
-    return responders, responder_done
+    [responders, responder_done]
   end
 end
 
