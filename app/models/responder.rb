@@ -52,7 +52,7 @@ class Responder < ActiveRecord::Base
   end
 
   def self.make_available(emergency_code)
-    where(emergency_code: emergency_code).each do |responder|
+    where(emergency_code: emergency_code).find_each do |responder|
       responder.dispatch = false
       responder.emergency_code = nil
       responder.save
