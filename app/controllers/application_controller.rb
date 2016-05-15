@@ -10,6 +10,6 @@ class ApplicationController < ActionController::Base
   def respond_in_json(json_message, status)
     respond_to do |format|
       format.json { render json: json_message, status: status }
-    end  	
+    end
   end
 end

@@ -17,15 +17,11 @@ class RespondersController < ApplicationController
 
   def index
     if params[:show].try('downcase') == 'capacity'
-      total_fire_capacity, total_fire_available, total_fire_on_duty, total_fire_available_and_on_duty = Fire.calculate_capacity
-      total_police_capacity, total_police_available, total_police_on_duty, total_police_available_and_on_duty = Police.calculate_capacity
-      total_medical_capacity, total_medical_available, total_medical_on_duty, total_medical_available_and_on_duty = Medical.calculate_capacity
-      respond_to do |format|
-        format.json { render json: { capacity:
-          { :Fire => [total_fire_capacity, total_fire_available, total_fire_on_duty, total_fire_available_and_on_duty],
-           :Police => [total_police_capacity, total_police_available, total_police_on_duty, total_police_available_and_on_duty],
-           :Medical => [total_medical_capacity, total_medical_available, total_medical_on_duty, total_medical_available_and_on_duty] } }, status: :ok }
-      end
+      fire_capacity_info = Fire.calculate_capacity
+      police_capacity_info = Police.calculate_capacity
+      medical_capacity_info = Medical.calculate_capacity
+      json_message = get_json_response(fire_capacity_info, police_capacity_info, medical_capacity_info)
+      respond_in_json(json_message, :ok)
     else
       @responders = Responder.all
       respond_to do |format|
@@ -79,5 +75,16 @@ class RespondersController < ApplicationController
     params.require(:responder).permit(:on_duty)
   rescue => ex
     ex
+  end
+
+  def get_json_response(fire_capacity_information, police_capacity_information, medical_capacity_information)
+    {
+      capacity:
+      {
+        "Fire": fire_capacity_information,
+        "Police": police_capacity_information,
+        "Medical": medical_capacity_information
+      }
+    }
   end
 end

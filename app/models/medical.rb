@@ -6,5 +6,5 @@ class Medical < Responder
     total_on_duty = medical_responders.where(on_duty: true).map(&:capacity).sum
     total_available_on_duty = medical_responders.where(on_duty: true).where(dispatch: false).map(&:capacity).sum
     [total_responders, total_available, total_on_duty, total_available_on_duty]
-  end 
+  end
 end

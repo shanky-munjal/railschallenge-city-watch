@@ -6,7 +6,7 @@ class EmergenciesController < ApplicationController
       @emergency = Emergency.new(emergency_params)
       if @emergency.save
         responders, full_response = @emergency.dispatch_responder
-        json_message = { emergency: { code: @emergency.code, fire_severity: @emergency.fire_severity, police_severity: @emergency.police_severity, medical_severity: @emergency.medical_severity, responders: responders, full_response: full_response } }
+        json_message = get_json_response(@emergency, responders, full_response)
         respond_in_json(json_message, :created)
       else
         respond_in_json({ message: @emergency.errors.messages }, :unprocessable_entity)
@@ -33,7 +33,7 @@ class EmergenciesController < ApplicationController
 
   def update
     if emergency_params_for_update.is_a? Hash
-      if @emergency.update(emergency_params_for_update)          
+      if @emergency.update(emergency_params_for_update)
         Responder.make_available(@emergency.code) if @emergency.resolved_at
         respond_in_json({ emergency: @emergency }, :ok)
       else
@@ -69,5 +69,19 @@ class EmergenciesController < ApplicationController
     params.require(:emergency).permit(:fire_severity, :police_severity, :medical_severity, :resolved_at)
   rescue => ex
     ex
+  end
+
+  def get_json_response(emergency, responders, full_response)
+    {
+      emergency:
+      {
+        code: emergency.code,
+        fire_severity: emergency.fire_severity,
+        police_severity: emergency.police_severity,
+        medical_severity: emergency.medical_severity,
+        responders: responders,
+        full_response: full_response
+      }
+    }
   end
 end
