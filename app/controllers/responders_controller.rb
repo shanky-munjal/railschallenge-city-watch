@@ -70,6 +70,7 @@ class RespondersController < ApplicationController
 
   def destroy
   end
+
   def edit
   end
 
@@ -80,19 +81,15 @@ class RespondersController < ApplicationController
   end
 
   def responder_params
-    begin
-      params.require(:responder).permit(:type, :name, :capacity)
-    rescue => ex
-      ex
-    end
+    params.require(:responder).permit(:type, :name, :capacity)
+  rescue => ex
+    ex
   end 
 
   def responder_params_for_update
-    begin
-      params.require(:responder).permit(:on_duty)
-    rescue => ex
+    params.require(:responder).permit(:on_duty)
+  rescue => ex
       ex
-    end
   end 
 
 end
